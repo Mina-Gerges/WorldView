@@ -6,6 +6,7 @@
 //
 
 protocol CountryAPIServiceProtocol {
+    func fetchAllCountries() async throws -> [CountryDTO]?
     func searchCountry(by name: String, fullText: Bool) async throws -> [CountryDTO]?
 }
 
@@ -14,6 +15,12 @@ final class CountryAPIService: CountryAPIServiceProtocol {
 
     init(requestManager: RequestManagerProtocol = RequestManager()) {
         self.requestManager = requestManager
+    }
+    
+    func fetchAllCountries() async throws -> [CountryDTO]? {
+        let request = APIRequests.fetchAllCountries
+        let countries: [CountryDTO] = try await requestManager.perform(request)
+        return countries
     }
 
     func searchCountry(by name: String, fullText: Bool = false) async throws -> [CountryDTO]? {

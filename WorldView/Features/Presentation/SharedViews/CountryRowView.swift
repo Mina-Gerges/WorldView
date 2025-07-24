@@ -16,27 +16,21 @@ struct CountryRowView: View {
 
     var body: some View {
         HStack {
-            AsyncImage(url: URL(string: country.flag ?? "")) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .frame(width: 40, height: 30)
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 30)
-                        .cornerRadius(4)
-                case .failure:
-                    Image(systemName: "flag.slash")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 30)
-                        .foregroundColor(.gray)
-                @unknown default:
-                    EmptyView()
+            CachedAsyncImage(
+                url: URL(string: country.flag ?? ""),
+                placeholder: {
+                    AnyView(ProgressView().frame(width: 40, height: 30))
+                },
+                image: { img in
+                    AnyView(
+                        img
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40, height: 30)
+                            .cornerRadius(4)
+                    )
                 }
-            }
+            )
 
             VStack(alignment: .leading) {
                 Text(country.name ?? "Unknown")

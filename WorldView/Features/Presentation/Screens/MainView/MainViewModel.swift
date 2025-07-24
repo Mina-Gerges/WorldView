@@ -16,17 +16,14 @@ final class MainViewModel: ObservableObject {
     @Published var searchResults: [CountryEntity] = []
     @Published var selectedCountries: [CountryEntity] = [] {
         didSet {
-            if selectedCountries.count >= 5 {
-                isLimitReached = true
-            }
+            isLimitReached = selectedCountries.count >= 5
         }
     }
     @Published var isLimitReached = false
     @Published var errorMessage: String?
-    @Published var isSearching = false
-    @Published var selectedCountry: CountryEntity?
-    @Published var isShowingDetail = false
+    @Published var isLoading = false
     
+    private var allCountries: [CountryEntity] = []
     private var cancellables = Set<AnyCancellable>()
     private let apiService: CountryAPIServiceProtocol
     private let locationManager = LocationManager.shared
@@ -50,9 +47,7 @@ final class MainViewModel: ObservableObject {
             .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] query in
-                Task {
-                    await self?.search(for: query)
-                }
+                self?.filterSearchResults(for: query)
             }
             .store(in: &cancellables)
         
@@ -65,11 +60,11 @@ final class MainViewModel: ObservableObject {
     func initialize() async {
         // Load persisted countries first, then fetch the current location country if counties less than 5.
         await loadPersistedCountries()
-        
+        await loadAllCountries()
+
         guard selectedCountries.count < 5 else {
             return // Already reached max, skip adding location
         }
-        
         await initializeWithCurrentLocation()
     }
     
@@ -97,23 +92,30 @@ final class MainViewModel: ObservableObject {
         }
     }
     
-    func search(for query: String) async {
-        guard !query.isEmpty else {
-            searchResults = []
-            return
-        }
-        
-        isSearching = true
-        
+    private func loadAllCountries() async {
+        isLoading = true
         do {
-            let dtos: [CountryDTO]? = try await apiService.searchCountry(by: query, fullText: false)
-            let entities: [CountryEntity] = dtos?.map { CountryEntity.from(dto: $0) } ?? []
-            searchResults = entities
-            isSearching = false
+            let dtos = try await apiService.fetchAllCountries() ?? []
+            allCountries = dtos.map { CountryEntity.from(dto: $0) }
+            filterSearchResults(for: searchQuery)
+            isLoading = false
         } catch {
             errorMessage = "Failed to fetch countries. Please check your connection."
-            searchResults = []
-            isSearching = false
+            isLoading = false
+        }
+    }
+    
+    private func filterSearchResults(for query: String) {
+        guard !query.isEmpty else {
+            searchResults = allCountries
+            return
+        }
+
+        let lowercasedQuery = query.lowercased()
+
+        searchResults = allCountries.filter {
+            ($0.name ?? "").lowercased().contains(lowercasedQuery) ||
+            ($0.capital ?? "").lowercased().contains(lowercasedQuery)
         }
     }
     

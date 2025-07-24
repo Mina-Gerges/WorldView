@@ -18,28 +18,22 @@ struct CountryDetailView: View {
                 .font(.largeTitle)
                 .bold()
             
-            AsyncImage(url: URL(string: country.flag ?? "")) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                        .frame(width: 160, height: 120)
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: 160)
-                        .cornerRadius(8)
-                        .shadow(radius: 4)
-                case .failure:
-                    Image(systemName: "flag.slash")
-                        .resizable()
-                        .aspectRatio(4/3, contentMode: .fit)
-                        .frame(maxWidth: 160)
-                        .foregroundColor(.gray)
-                @unknown default:
-                    EmptyView()
+            CachedAsyncImage(
+                url: URL(string: country.flag ?? ""),
+                placeholder: {
+                    AnyView(ProgressView().frame(width: 160, height: 120))
+                },
+                image: { img in
+                    AnyView(
+                        img
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: 160)
+                            .cornerRadius(8)
+                            .shadow(radius: 4)
+                    )
                 }
-            }
+            )
 
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
