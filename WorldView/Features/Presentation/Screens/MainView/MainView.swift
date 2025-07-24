@@ -9,9 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct MainView: View {
+    // MARK: - Properties
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel = MainViewModel()
-
+    @StateObject private var viewModel = MainViewModel.create()
+    
+    // MARK: - Body
     var body: some View {
         NavigationStack {
             VStack {
@@ -20,7 +22,7 @@ struct MainView: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(20)
                     .padding(.horizontal)
-
+                
                 List {
                     // Section: Search Results
                     if viewModel.isSearching {
@@ -34,7 +36,7 @@ struct MainView: View {
                         Section(header: Text("Search Results")) {
                             ForEach(viewModel.searchResults) { country in
                                 let isSelected = viewModel.selectedCountries.contains(where: { $0.name == country.name })
-
+                                
                                 CountryRowView(
                                     country: country,
                                     actionIcon: isSelected ? "checkmark.circle.fill" : "plus.circle",
@@ -54,7 +56,7 @@ struct MainView: View {
                                 .foregroundColor(.gray)
                         }
                     }
-
+                    
                     // Section: Selected Countries
                     if !viewModel.selectedCountries.isEmpty {
                         Section(header: Text("Selected Countries")) {
@@ -75,7 +77,6 @@ struct MainView: View {
                     if viewModel.isLimitReached {
                         Text("You can only add up to 5 countries.")
                             .foregroundColor(.red)
-                            .padding(.bottom)
                     }
                 }
                 .listStyle(.insetGrouped)

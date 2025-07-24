@@ -54,6 +54,7 @@ struct CountryRowView: View {
                 Image(systemName: actionIcon)
                     .foregroundColor(actionColor)
             }
+            .buttonStyle(PlainButtonStyle())
             .disabled(isDisabled)
         }
     }

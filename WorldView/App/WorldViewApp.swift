@@ -15,6 +15,7 @@ struct WorldViewApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             CountryEntity.self,
+            CurrencyInfoEntity.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

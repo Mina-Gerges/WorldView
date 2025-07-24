@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct CountryDetailView: View {
+    // MARK: - Properties
     let country: CountryEntity
 
+    // MARK: - Body
     var body: some View {
         VStack(spacing: 20) {
             Text(country.name ?? "")
