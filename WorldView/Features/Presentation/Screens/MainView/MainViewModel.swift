@@ -20,6 +20,7 @@ final class MainViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     private let apiService: CountryAPIServiceProtocol
+    private let locationManager = LocationManager.shared
     
     // MARK: - Init
     init() {
@@ -33,9 +34,29 @@ final class MainViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+        
+        Task {
+            await initializeWithCurrentLocation()
+        }
     }
     
     // MARK: - Methods
+    private func initializeWithCurrentLocation() async {
+        guard let countryName = locationManager.country else { return }
+
+        do {
+            let dtos = try await apiService.searchCountry(by: countryName, fullText: true)
+            if let dto = dtos?.first {
+                let entity = CountryEntity.from(dto: dto)
+                if !selectedCountries.contains(entity) {
+                    selectedCountries.insert(entity, at: 0)
+                }
+            }
+        } catch {
+            print("Failed to fetch country for location: \(error)")
+        }
+    }
+    
     func search(for query: String) async {
         guard !query.isEmpty else {
             searchResults = []
@@ -45,7 +66,7 @@ final class MainViewModel: ObservableObject {
         isSearching = true
         
         do {
-            let dtos: [CountryDTO]? = try await apiService.searchCountry(by: query)
+            let dtos: [CountryDTO]? = try await apiService.searchCountry(by: query, fullText: false)
             let entities: [CountryEntity] = dtos?.map { CountryEntity.from(dto: $0) } ?? []
             searchResults = entities
             isSearching = false

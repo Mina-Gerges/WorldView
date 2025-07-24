@@ -8,7 +8,7 @@
 import Foundation
 
 enum APIRequests: RequestProtocol {
-    case searchCountry(name: String)
+    case searchCountry(name: String, fullText: Bool)
 
     var host: String {
         return "restcountries.com"
@@ -16,7 +16,7 @@ enum APIRequests: RequestProtocol {
 
     var path: String {
         switch self {
-        case .searchCountry(let name):
+        case .searchCountry(let name, _):
             return "/v2/name/\(name)"
         }
     }
@@ -26,7 +26,10 @@ enum APIRequests: RequestProtocol {
     }
 
     var urlParams: [String: String?] {
-        return [:]
+        switch self {
+        case .searchCountry(_, let fullText):
+            return ["fullText": fullText ? "true" : nil]
+        }
     }
 
     var headers: [String: String] {

@@ -8,5 +8,7 @@
 import Foundation
 
 enum AppConstants {
-    
+    enum LottieFiles {
+        static let earth = "Earth"
+    }
 }
