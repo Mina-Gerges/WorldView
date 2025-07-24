@@ -59,13 +59,15 @@ struct MainView: View {
                     if !viewModel.selectedCountries.isEmpty {
                         Section(header: Text("Selected Countries")) {
                             ForEach(viewModel.selectedCountries) { country in
-                                CountryRowView(
-                                    country: country,
-                                    actionIcon: "trash",
-                                    actionColor: .red,
-                                    action: { viewModel.removeCountry(country) },
-                                    isDisabled: false
-                                )
+                                NavigationLink(destination: CountryDetailView(country: country)) {
+                                    CountryRowView(
+                                        country: country,
+                                        actionIcon: "trash",
+                                        actionColor: .red,
+                                        action: { viewModel.removeCountry(country) },
+                                        isDisabled: false
+                                    )
+                                }
                             }
                         }
                     }
