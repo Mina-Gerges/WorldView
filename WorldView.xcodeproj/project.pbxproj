@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		631672832E32515D00F86813 /* netfox in Frameworks */ = {isa = PBXBuildFile; productRef = 631672822E32515D00F86813 /* netfox */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		63E5F8FF2E317A4900D8C537 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				631672832E32515D00F86813 /* netfox in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = WorldView;
 			packageProductDependencies = (
+				631672822E32515D00F86813 /* netfox */,
 			);
 			productName = WorldView;
 			productReference = 63E5F8EC2E317A4700D8C537 /* WorldView.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 63E5F8E32E317A4700D8C537;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				631672812E32515D00F86813 /* XCRemoteSwiftPackageReference "netfox" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 63E5F8ED2E317A4700D8C537 /* Products */;
 			projectDirPath = "";
@@ -552,6 +561,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		631672812E32515D00F86813 /* XCRemoteSwiftPackageReference "netfox" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kasketis/netfox";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.21.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		631672822E32515D00F86813 /* netfox */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 631672812E32515D00F86813 /* XCRemoteSwiftPackageReference "netfox" */;
+			productName = netfox;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 63E5F8E42E317A4700D8C537 /* Project object */;
 }

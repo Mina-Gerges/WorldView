@@ -8,14 +8,13 @@
 import Foundation
 
 struct CountryDTO: Decodable {
-    let name: Name
-    let capital: [String]?
-    let flags: Flags
-    let currencies: [String]
-
-    struct Name: Decodable {
-        let common: String
-    }
+    let name: String?
+    let capital: String?
+    let flag: String?
+    let flags: Flags?
+    let currencies: [CurrencyInfo]?
+    let timezones: [String]?
+    let languages: [LanguageInfo]?
 
     struct Flags: Decodable {
         let svg: String?
@@ -23,37 +22,15 @@ struct CountryDTO: Decodable {
     }
 
     struct CurrencyInfo: Decodable {
-        let name: String
+        let code: String?
+        let name: String?
+        let symbol: String?
     }
 
-    private enum CodingKeys: String, CodingKey {
-        case name, capital, flags, currencies
-    }
-
-    private struct DynamicCurrenciesCodingKey: CodingKey {
-        var stringValue: String
-        var intValue: Int? { nil }
-
-        init?(stringValue: String) {
-            self.stringValue = stringValue
-        }
-
-        init?(intValue: Int) {
-            return nil
-        }
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        name = try container.decode(Name.self, forKey: .name)
-        capital = try container.decodeIfPresent([String].self, forKey: .capital)
-        flags = try container.decode(Flags.self, forKey: .flags)
-
-        let currencyContainer = try container.nestedContainer(keyedBy: DynamicCurrenciesCodingKey.self, forKey: .currencies)
-        currencies = try currencyContainer.allKeys.compactMap { key in
-            try currencyContainer.decode(CurrencyInfo.self, forKey: key).name
-        }
+    struct LanguageInfo: Decodable {
+        let name: String?
+        let nativeName: String?
     }
 }
+
 

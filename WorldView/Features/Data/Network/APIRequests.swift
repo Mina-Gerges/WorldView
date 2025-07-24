@@ -11,13 +11,13 @@ enum APIRequests: RequestProtocol {
     case searchCountry(name: String)
 
     var host: String {
-        return "restcountries.com/v2"
+        return "restcountries.com"
     }
 
     var path: String {
         switch self {
         case .searchCountry(let name):
-            return "/name/\(name)"
+            return "/v2/name/\(name)"
         }
     }
 

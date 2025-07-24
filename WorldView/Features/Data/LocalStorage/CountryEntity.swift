@@ -10,12 +10,12 @@ import SwiftData
 
 @Model
 class CountryEntity {
-    var name: String
-    var flag: String
-    var capital: String
-    var currency: String
+    var name: String?
+    var flag: String?
+    var capital: String?
+    var currency: CurrencyInfoEntity?
     
-    init(name: String, flag: String, capital: String, currency: String) {
+    init(name: String? = nil, flag: String? = nil, capital: String? = nil, currency: CurrencyInfoEntity? = nil) {
         self.name = name
         self.flag = flag
         self.capital = capital
@@ -25,11 +25,15 @@ class CountryEntity {
 
 extension CountryEntity {
     static func from(dto: CountryDTO) -> CountryEntity {
-        CountryEntity(
-            name: dto.name.common,
-            flag: dto.flags.png ?? dto.flags.svg ?? "N/A",
-            capital: dto.capital?.first ?? "N/A",
-            currency: dto.currencies.first ?? "N/A"
+        let currencyEntity: CurrencyInfoEntity? = dto.currencies?.first.map {
+            CurrencyInfoEntity(code: $0.code, name: $0.name, symbol: $0.symbol)
+        }
+        
+        return CountryEntity(
+            name: dto.name,
+            flag: dto.flags?.png ?? dto.flag,
+            capital: dto.capital,
+            currency: currencyEntity
         )
     }
 }

@@ -5,11 +5,11 @@
 //  Created by Mina Gerges on 24/07/2025.
 //
 
-protocol CountryAPIService {
+protocol CountryAPIServiceProtocol {
     func searchCountry(by name: String) async throws -> [CountryDTO]?
 }
 
-final class CountryAPIManager: CountryAPIService {
+final class CountryAPIService: CountryAPIServiceProtocol {
     private let requestManager: RequestManagerProtocol
 
     init(requestManager: RequestManagerProtocol = RequestManager()) {

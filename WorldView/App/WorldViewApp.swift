@@ -10,6 +10,8 @@ import SwiftData
 
 @main
 struct WorldViewApp: App {
+    // MARK: - Properties
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             CountryEntity.self,
@@ -23,9 +25,10 @@ struct WorldViewApp: App {
         }
     }()
 
+    // MARK: - Body
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
         }
         .modelContainer(sharedModelContainer)
     }
