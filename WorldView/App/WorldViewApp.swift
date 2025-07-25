@@ -10,9 +10,12 @@ import SwiftData
 
 @main
 struct WorldViewApp: App {
+    // MARK: - Properties
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            CountryEntity.self,
+            CurrencyInfoEntity.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -23,9 +26,10 @@ struct WorldViewApp: App {
         }
     }()
 
+    // MARK: - Body
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
         }
         .modelContainer(sharedModelContainer)
     }
