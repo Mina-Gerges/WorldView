@@ -12,7 +12,11 @@ import SwiftData
 @MainActor
 final class MainViewModel: ObservableObject {
     // MARK: - Properties
-    @Published var searchQuery = ""
+    @Published var searchQuery = "" {
+        didSet {
+            filterSearchResults(for: searchQuery)
+        }
+    }
     @Published var searchResults: [CountryEntity] = []
     @Published var selectedCountries: [CountryEntity] = [] {
         didSet {
@@ -23,11 +27,11 @@ final class MainViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
     
-    private var allCountries: [CountryEntity] = []
+    var allCountries: [CountryEntity] = []
     private var cancellables = Set<AnyCancellable>()
     private let apiService: CountryAPIServiceProtocol
     private let locationManager = LocationManager.shared
-    private let storageManager: CountryStorageManager
+    private let storageManager: CountryStorageManagerProtocol
     
     // MARK: - Create ViewModel
     static func create() -> MainViewModel {
@@ -40,32 +44,29 @@ final class MainViewModel: ObservableObject {
     }
     
     // MARK: - Init
-    init(modelContainer: ModelContainer) {
-        apiService = CountryAPIService()
-        self.storageManager = CountryStorageManager(modelContainer: modelContainer)
-        $searchQuery
-            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] query in
-                self?.filterSearchResults(for: query)
-            }
-            .store(in: &cancellables)
-        
+    init(
+        modelContainer: ModelContainer,
+        apiService: CountryAPIServiceProtocol = CountryAPIService(),
+        storageManager: CountryStorageManagerProtocol? = nil
+    ) {
+        self.apiService = CountryAPIService()
+        self.storageManager = storageManager ?? CountryStorageManager(modelContainer: modelContainer)
         Task {
             await initialize()
         }
     }
     
-    // MARK: - Methods
+    // MARK: - Initial Methods
     func initialize() async {
         // Load persisted countries first, then fetch the current location country if counties less than 5.
         await loadPersistedCountries()
-        await loadAllCountries()
-
-        guard selectedCountries.count < 5 else {
-            return // Already reached max, skip adding location
+        
+        if selectedCountries.count < 5 {
+            _ = await (loadAllCountries(), initializeWithCurrentLocation())
+        } else {
+            // Already reached max, skip adding location
+            await loadAllCountries()
         }
-        await initializeWithCurrentLocation()
     }
     
     private func loadPersistedCountries() async {
@@ -118,6 +119,8 @@ final class MainViewModel: ObservableObject {
             ($0.capital ?? "").lowercased().contains(lowercasedQuery)
         }
     }
+    
+    // MARK: - Other Methods
     
     func addCountry(_ country: CountryEntity) {
         guard !selectedCountries.contains(country),

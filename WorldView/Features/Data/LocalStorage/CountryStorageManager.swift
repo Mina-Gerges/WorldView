@@ -8,8 +8,14 @@
 import Foundation
 import SwiftData
 
+protocol CountryStorageManagerProtocol {
+    func fetchSavedCountries() async throws -> [CountryEntity]
+    func saveCountry(_ country: CountryEntity) async throws
+    func deleteCountry(_ country: CountryEntity) async throws
+}
+
 @ModelActor
-actor CountryStorageManager {
+actor CountryStorageManager: CountryStorageManagerProtocol {
     func saveCountry(_ country: CountryEntity) throws {
         modelContext.insert(country)
         try modelContext.save()

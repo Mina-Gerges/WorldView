@@ -15,7 +15,7 @@ struct SplashView: View {
         ZStack {
             Color.white.ignoresSafeArea()
             
-            LottieView(name: AppConstants.LottieFiles.earth, loopMode: .playOnce)
+            LottieView(name: AppConstants.LottieFiles.earth, loopMode: .loop)
                 .frame(width: 400, height: 400)
                 .onAppear {
                     locationManager.requestPermission()
